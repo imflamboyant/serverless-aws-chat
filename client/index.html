@@ -221,11 +221,11 @@
                 previousActiveChannel.classList.remove('active');
             }
         }
-
-        currentChannel = channel;
-        mqttClient.subscribe(channel, (err) => {
+        const channelPrefix = 'serverlesschat/channels/';
+        currentChannel = channelPrefix + channel;
+        mqttClient.subscribe(currentChannel, (err) => {
             if (!err) {
-                console.log(`Subscribed to ${channel}`);
+                console.log(`Subscribed to ${currentChannel}`);
                 messagesDiv.innerHTML = '';
                 // Add active class to the clicked channel
                 document.querySelectorAll(`#channels li`).forEach(ch => {
