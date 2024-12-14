@@ -1,5 +1,5 @@
-import { IoTCustomAuthorizerEvent } from 'aws-lambda';
-import { IoTCustomAuthorizerResult } from 'aws-lambda/trigger/iot-authorizer';
+import {IoTCustomAuthorizerEvent} from 'aws-lambda';
+import {IoTCustomAuthorizerResult} from 'aws-lambda/trigger/iot-authorizer';
 
 export class LambdaAuthorizerHandler {
 
