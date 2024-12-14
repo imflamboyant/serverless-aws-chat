@@ -165,6 +165,7 @@
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
 
+    const channelPrefix = 'serverlesschat/channels/';
     let currentChannel = null;
     const currentUser = 'User'+ Math.floor(Math.random() * 1000);
 
@@ -184,8 +185,8 @@
         const messageData = JSON.parse(message.toString());
 
         // Check if the sender is the current user
-        if (messageData.sender !== currentUser) {
-            displayMessage(messageData.text, 'them', messageData.sender);
+        if (messageData.username !== currentUser) {
+            displayMessage(messageData.message, 'them', messageData.username);
         }
     });
 
@@ -201,12 +202,13 @@
         const message = messageInput.value;
         const username = currentUser;
         const messagePayload = {
-            text: message,
-            sender: username
+            channel: currentChannel,
+            message: message,
+            username: username
         };
 
         if (message && currentChannel) {
-            mqttClient.publish(currentChannel, JSON.stringify(messagePayload));
+            mqttClient.publish(channelPrefix + currentChannel, JSON.stringify(messagePayload));
             displayMessage(message, 'me', username);
             messageInput.value = '';
         }
@@ -221,11 +223,10 @@
                 previousActiveChannel.classList.remove('active');
             }
         }
-        const channelPrefix = 'serverlesschat/channels/';
-        currentChannel = channelPrefix + channel;
-        mqttClient.subscribe(currentChannel, (err) => {
+        currentChannel = channel;
+        mqttClient.subscribe(channelPrefix + currentChannel, (err) => {
             if (!err) {
-                console.log(`Subscribed to ${currentChannel}`);
+                console.log(`Subscribed to ${channelPrefix + currentChannel}`);
                 messagesDiv.innerHTML = '';
                 // Add active class to the clicked channel
                 document.querySelectorAll(`#channels li`).forEach(ch => {
