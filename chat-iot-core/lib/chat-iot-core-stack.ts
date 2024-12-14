@@ -62,6 +62,10 @@ export class ChatIotCoreStack extends cdk.Stack {
         // rest api to get messages from the DynamoDB table
         const api = new RestApi(this, 'ServerlessChatApi', {
             restApiName: 'Serverless Chat API',
+            defaultCorsPreflightOptions: {
+                allowOrigins: ['*'],
+                allowMethods: ['*'],
+            }
         });
         api.root
             .addResource('channels').addResource('{channel}').addResource('messages')

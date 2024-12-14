@@ -22,6 +22,10 @@ export class GetMessagesApiHandler {
         return {
             statusCode: 200,
             body: JSON.stringify(result.Items),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET',
+            },
         };
     }
 }
