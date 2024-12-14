@@ -2,11 +2,12 @@ import * as cdk from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {Code, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
-import {ManagedPolicy, Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
+import {ServicePrincipal} from 'aws-cdk-lib/aws-iam';
 import {CfnAuthorizer} from 'aws-cdk-lib/aws-iot';
 import {AttributeType, BillingMode, ITable, Table} from 'aws-cdk-lib/aws-dynamodb';
 import {IotSql, TopicRule} from '@aws-cdk/aws-iot-alpha';
 import {DynamoDBv2PutItemAction} from '@aws-cdk/aws-iot-actions-alpha';
+import {LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
 
 export class ChatIotCoreStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -35,8 +36,8 @@ export class ChatIotCoreStack extends cdk.Stack {
         // create a DynamoDB table for storing chat messages
         const table: ITable = new Table(this, 'ChatMessagesTable', {
             tableName: 'serverless-chat-iot-core-messages',
-            partitionKey: { name: 'channel', type: AttributeType.STRING },
-            sortKey: { name: 'timestamp', type: AttributeType.STRING },
+            partitionKey: {name: 'channel', type: AttributeType.STRING},
+            sortKey: {name: 'timestamp', type: AttributeType.STRING},
             billingMode: BillingMode.PAY_PER_REQUEST,
         });
         // create IoT Rule and Rule Action to send messages to the DynamoDB table
@@ -48,5 +49,22 @@ export class ChatIotCoreStack extends cdk.Stack {
                 new DynamoDBv2PutItemAction(table),
             ],
         });
+        // lambda function to get messages from the DynamoDB table
+        const getMessagesLambda = new NodejsFunction(this, 'GetMessagesLambda', {
+            runtime: Runtime.NODEJS_20_X,
+            code: Code.fromAsset('src'),
+            handler: 'get-messages-handler.getMessages',
+            environment: {
+                MESSAGES_TABLE: table.tableName,
+            },
+        });
+        table.grantReadData(getMessagesLambda);
+        // rest api to get messages from the DynamoDB table
+        const api = new RestApi(this, 'ServerlessChatApi', {
+            restApiName: 'Serverless Chat API',
+        });
+        api.root
+            .addResource('channels').addResource('{channel}').addResource('messages')
+            .addMethod('GET', new LambdaIntegration(getMessagesLambda));
     }
 }
