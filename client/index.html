@@ -164,7 +164,7 @@
     const messagesDiv = document.getElementById('messages');
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
-
+    const messagesApiUrl = 'API_ENDPOINT'
     const channelPrefix = 'serverlesschat/channels/';
     let currentChannel = null;
     const currentUser = 'User'+ Math.floor(Math.random() * 1000);
@@ -189,7 +189,6 @@
             displayMessage(messageData.message, 'them', messageData.username);
         }
     });
-
 
     sendButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keyup', event => {
@@ -234,6 +233,14 @@
                         ch.classList.add('active');
                     }
                 });
+                // fetch existing messages from api
+                fetch(messagesApiUrl + `/${currentChannel}/messages`)
+                    .then(response => response.json())
+                    .then(messages => {
+                        messages.forEach(message => {
+                            displayMessage(message.message, message.username === currentUser ? 'me' : 'them', message.username);
+                        });
+                    });
             }
         });
     }
