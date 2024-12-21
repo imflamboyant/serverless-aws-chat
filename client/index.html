@@ -144,6 +144,7 @@
     </style>
 </head>
 <body>
+<h3 id="username-label"></h3>
 <div id="app">
     <div id="channels">
         <ul id="channelList"></ul>
@@ -159,15 +160,21 @@
 
 <script src="https://unpkg.com/mqtt@5.10.3/dist/mqtt.min.js"></script>
 <script>
-    const mqttClient = mqtt.connect('wss://IOT_ENDPOINT');
+    const messagesApiUrl = 'API_ENDPOINT'
+    const brokerUrl = 'IOT_ENDPOINT';
+
+    const currentUser = 'User'+ Math.floor(Math.random() * 1000);
+    const mqttClient = mqtt.connect(brokerUrl, { clientId: currentUser });
+
     const channelList = document.getElementById('channelList');
     const messagesDiv = document.getElementById('messages');
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
-    const messagesApiUrl = 'API_ENDPOINT'
+
     const channelPrefix = 'serverlesschat/channels/';
     let currentChannel = null;
-    const currentUser = 'User'+ Math.floor(Math.random() * 1000);
+
+    document.getElementById('username-label').textContent = currentUser;
 
     mqttClient.on('connect', () => {
         console.log('Connected to MQTT broker');
