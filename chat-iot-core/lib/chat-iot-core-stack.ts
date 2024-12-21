@@ -22,10 +22,7 @@ export class ChatIotCoreStack extends cdk.Stack {
             },
         });
         // allow IoT to invoke the Lambda function
-        authorizerLambda.addPermission('AllowIoTInvoke', {
-            action: 'lambda:InvokeFunction',
-            principal: new ServicePrincipal('iot.amazonaws.com'),
-        });
+        authorizerLambda.grantInvoke(new ServicePrincipal('iot.amazonaws.com'));
         // create the IoT custom authorizer and attach the lambda to it
         new CfnAuthorizer(this, 'ServerlessChatIoTAuthorizer', {
             authorizerName: 'ServerlessChatIoTAuthorizer',
