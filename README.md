@@ -1,13 +1,14 @@
 # Serverless AWS Chat With IoT Core
 
-This project implements a serverless chat application using AWS IoT Core. It allows real-time communication between devices connected to IoT Core, leveraging AWS services for a scalable and efficient chat solution.
+This project implements a serverless chat application using AWS IoT Core. It is showcasing a real-time communication between connected clients.
+Additionally, it provides the infrastructure to persist and retrieve chat messages.
 
 ## Project Overview
 
 - Utilizes AWS CDK for infrastructure as code
-- Implements serverless architecture using AWS Lambda and IoT Core
+- Implements serverless architecture using AWS Lambda, IoT Core & DynamoDB
 - Provides real-time messaging capabilities
-- Includes a simple client-side interface for demonstration
+- Includes a simple client-side web interface for demonstration
 
 ## Prerequisites
 
@@ -15,7 +16,7 @@ This project implements a serverless chat application using AWS IoT Core. It all
 - AWS CLI configured with appropriate permissions
 - AWS CDK installed (`npm install -g aws-cdk`)
 
-> Note: the code above uses CDK constructs from alpha modules, meaning that it is still considered experimental and under active development.
+> Note: the project uses CDK constructs from IoT Core alpha modules, meaning that they are still considered experimental and under active development.
 Please be aware that breaking changes might happen in the future. I will keep the codebase up to date, and in the meantime
 feel free to consult the CDK docs of [aws-iot-alpha](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-iot-alpha-readme.html)
 and [aws-iot-actions-alpha](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-iot-actions-alpha-readme.html) for details.
@@ -60,8 +61,9 @@ Make sure the region is set to the region you are deploying to. Also, you can fi
 
 After deployment, you can test the chat application by:
 
-1. Opening the `client/index.html` file in a web browser
-2. Using the AWS IoT Core console to publish messages to the configured topics
+1. Opening multiple instances of `client/index.html` file in a web browser
+    - each client gets a randomly generated username
+2. Sending messages from different clients
 3. Observing real-time message updates in the client application
 
 ## Cleanup
