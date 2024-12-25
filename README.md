@@ -55,7 +55,14 @@ aws iot describe-endpoint
 ```
 Make sure the region is set to the region you are deploying to. Also, you can find your endpoint by navigating to IoT Core > MQTT test client in the AWS Console.
 
-7. Update the client-side application `client/index.html` with the necessary endpoints and credentials obtained above.
+7. Then, to make the authorizer actually work, it has to be specified as a query parameter. An example URL is:
+```shell
+'wss://xyz.iot.{region}.amazonaws.com/mqtt?x-amz-customauthorizer-name=ServerlessChatIoTAuthorizer'
+```
+
+**Note: ** `ServerlessChatIoTAuthorizer` is the name of the authorizer given in the CDK code.
+
+8. Update the client-side application `client/index.html` with the necessary endpoints obtained above.
 
 ## Testing the Application
 
