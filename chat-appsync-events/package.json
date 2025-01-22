@@ -1,0 +1,32 @@
+{
+  "name": "chat-appsync-events",
+  "version": "0.1.0",
+  "bin": {
+    "chat-appsync-events": "bin/chat-appsync-events.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.712.0",
+    "@aws-sdk/lib-dynamodb": "^3.712.0",
+    "@types/aws-lambda": "8.10.146",
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "aws-cdk": "2.175.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-pipes-alpha": "^2.175.1-alpha.0",
+    "@aws-cdk/aws-pipes-sources-alpha": "^2.175.1-alpha.0",
+    "@aws-cdk/aws-pipes-targets-alpha": "^2.175.1-alpha.0",
+    "aws-cdk-lib": "2.175.1",
+    "constructs": "^10.0.0"
+  }
+}
