@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import {SecretValue} from 'aws-cdk-lib';
+import {RemovalPolicy, SecretValue} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {AttributeType, BillingMode, ITable, StreamViewType, Table} from 'aws-cdk-lib/aws-dynamodb';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -37,6 +37,7 @@ export class ChatAppsyncEventsStack extends cdk.Stack {
             sortKey: {name: 'timestamp', type: AttributeType.STRING},
             billingMode: BillingMode.PAY_PER_REQUEST,
             stream: StreamViewType.NEW_IMAGE,
+            removalPolicy: RemovalPolicy.DESTROY, // do not use in production
         });
 
         // EventBridge Pipe DynamoDB Stream Source

@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import {RemovalPolicy} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {Code, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -36,6 +37,7 @@ export class ChatIotCoreStack extends cdk.Stack {
             partitionKey: {name: 'channel', type: AttributeType.STRING},
             sortKey: {name: 'timestamp', type: AttributeType.STRING},
             billingMode: BillingMode.PAY_PER_REQUEST,
+            removalPolicy: RemovalPolicy.DESTROY, // do not use in production
         });
         // create IoT Rule and Rule Action to send messages to the DynamoDB table
         new TopicRule(this, 'SendMessagesToDynamoDB', {
