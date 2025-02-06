@@ -63,7 +63,7 @@ websocket.onopen = () => {
                 }
             });
             // fetch existing messages for the channel
-            fetch(messagesApiUrl + `/${currentChannel}/messages`)
+            fetch(messagesApiUrl + `/channels/${currentChannel}/messages`)
                 .then(response => response.json())
                 .then(messages => {
                     messages.forEach(message => {
@@ -97,7 +97,7 @@ function sendMessage() {
     };
 
     if (message && currentChannel) {
-        fetch(messagesApiUrl + `/${currentChannel}/messages`, { method: 'POST', body: JSON.stringify(messagePayload) })
+        fetch(messagesApiUrl + `/channels/${currentChannel}/messages`, { method: 'POST', body: JSON.stringify(messagePayload) })
             .then(() => {
                 displayMessage(message, 'me', username);
                 messageInput.value = '';

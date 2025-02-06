@@ -24,12 +24,14 @@ feel free to consult the CDK docs of [aws-pipes-alpha](https://docs.aws.amazon.c
 
 ### Pre-requisites
 
-> Since L2 CDK constructs for AppSync Event API are not yet released, this project requires you to manually create the AppSync Event API 🙈
+> ~~Since L2 CDK constructs for AppSync Event API are not yet released, this project requires you to manually create the AppSync Event API 🙈
 To create it navigate the AWS console in your account to AppSync > Create Event API. After that, create an API key for authorization,
 and create a namespace `serverlesschat`. Make a note of API realtime and HTTP endpoints, as well as the API key, and that
-should be enough to make you ready to plug in this project on top of AppSync Events. Consult the [AWS guide](https://docs.aws.amazon.com/appsync/latest/eventapi/create-event-api-tutorial.html) if you get stuck.
+should be enough to make you ready to plug in this project on top of AppSync Events. Consult the [AWS guide](https://docs.aws.amazon.com/appsync/latest/eventapi/create-event-api-tutorial.html) if you get stuck.~~
 >
-> **Note:** As soon as the L2 constructs are released, this code will be updated to a more unified deployment.
+> ~~**Note:** As soon as the L2 constructs are released, this code will be updated to a more unified deployment.~~
+> 
+> 💡 Since L2 constructs are officially released (since CDK version 2.178.0), the project is updated and now AppSync Event API is deployed out of the box!
 
 ### Steps
 
@@ -53,18 +55,13 @@ npm install
 npm run build
 ```
 
-5. Set deployment environment variables `APPSYNC_EVENTS_API_ENDPOINT` & `APPSYNC_EVENTS_API_KEY`
-```shell
-APPSYNC_EVENTS_API_ENDPOINT=https://xxx.appsync-api.{region}.amazonaws.com/event APPSYNC_EVENTS_API_KEY=da2-xxx
-```
-
-6. Deploy the stack to your AWS account:
+5. Deploy the stack to your AWS account:
 ```shell
 npx cdk deploy
 ```
 Note the outputs from the CDK deployment, specifically the API Gateway endpoint.
 
-7. Update the client-side application
+6. Update the client-side application
 - uncomment the lines as instructed in `./client/index.html`
 - update `js/appsync-events.js` with the necessary endpoints and the API key noted from your AppSync Event API
 
@@ -83,5 +80,3 @@ To avoid incurring future charges, remember to destroy the resources when you're
 ```shell
 npx cdk destroy
 ```
-
-And manually remove the AppSync Event API and related resources.

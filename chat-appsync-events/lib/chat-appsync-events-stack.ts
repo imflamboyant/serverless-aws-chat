@@ -9,19 +9,26 @@ import {ApiDestination, Authorization, Connection, HttpMethod} from 'aws-cdk-lib
 import {DynamoDBSource, DynamoDBStartingPosition} from '@aws-cdk/aws-pipes-sources-alpha';
 import {InputTransformation, Pipe} from '@aws-cdk/aws-pipes-alpha';
 import {ApiDestinationTarget} from '@aws-cdk/aws-pipes-targets-alpha';
+import {AppSyncAuthorizationType, ChannelNamespace, EventApi} from 'aws-cdk-lib/aws-appsync';
 
 export class ChatAppsyncEventsStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        const appSyncEventsApiEndpoint = process.env.APPSYNC_EVENTS_API_ENDPOINT;
-        if (!appSyncEventsApiEndpoint) {
-            throw new Error('APPSYNC_EVENTS_API_ENDPOINT environment variable is not set');
-        }
-        const appSyncEventsApiKey = process.env.APPSYNC_EVENTS_API_KEY;
-        if (!appSyncEventsApiKey) {
-            throw new Error('APPSYNC_EVENTS_API_KEY environment variable is not set');
-        }
+        // AppSync Event API, namespace & apiKey
+        const eventApi = new EventApi(this, 'ChatAppSyncEventsApi', {
+            apiName: 'ChatAppSyncEventApi',
+            authorizationConfig: {
+                authProviders: [{
+                    authorizationType: AppSyncAuthorizationType.API_KEY,
+                }],
+            },
+        });
+        new ChannelNamespace(this, 'ChatAppNamespace', {
+            api: eventApi,
+            channelNamespaceName: 'serverlesschat',
+        })
+        const appSyncEventsApiKey = eventApi.apiKeys.Default.attrApiKey;
 
         // create a DynamoDB table for storing chat messages
         const table: ITable = new Table(this, 'ChatMessagesTable', {
@@ -43,7 +50,7 @@ export class ChatAppsyncEventsStack extends cdk.Stack {
         });
         const appSyncEventsApiDestination = new ApiDestination(this, 'AppSyncEventApiDestination', {
             connection: appSyncEventsApiConnection,
-            endpoint: appSyncEventsApiEndpoint,
+            endpoint: `${eventApi.httpDns}/event`,
             httpMethod: HttpMethod.POST,
         });
 
