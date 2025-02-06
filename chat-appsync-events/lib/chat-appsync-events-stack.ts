@@ -9,7 +9,7 @@ import {ApiDestination, Authorization, Connection, HttpMethod} from 'aws-cdk-lib
 import {DynamoDBSource, DynamoDBStartingPosition} from '@aws-cdk/aws-pipes-sources-alpha';
 import {InputTransformation, Pipe} from '@aws-cdk/aws-pipes-alpha';
 import {ApiDestinationTarget} from '@aws-cdk/aws-pipes-targets-alpha';
-import {AppSyncAuthorizationType, ChannelNamespace, EventApi} from 'aws-cdk-lib/aws-appsync';
+import {ChannelNamespace, EventApi} from 'aws-cdk-lib/aws-appsync';
 
 export class ChatAppsyncEventsStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -18,11 +18,6 @@ export class ChatAppsyncEventsStack extends cdk.Stack {
         // AppSync Event API, namespace & apiKey
         const eventApi = new EventApi(this, 'ChatAppSyncEventsApi', {
             apiName: 'ChatAppSyncEventApi',
-            authorizationConfig: {
-                authProviders: [{
-                    authorizationType: AppSyncAuthorizationType.API_KEY,
-                }],
-            },
         });
         new ChannelNamespace(this, 'ChatAppNamespace', {
             api: eventApi,
