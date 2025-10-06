@@ -5,8 +5,11 @@ import {AttributeType, BillingMode, ITable, StreamViewType, Table} from 'aws-cdk
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Code, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
+import {Code as AppSyncCode, EventApi} from 'aws-cdk-lib/aws-appsync';
+import * as path from 'path'
 
 export class ChatAppsyncEventsWebsocketStack extends cdk.Stack {
+
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
@@ -41,5 +44,20 @@ export class ChatAppsyncEventsWebsocketStack extends cdk.Stack {
         });
         const resource = api.root.addResource('channels').addResource('{channel}').addResource('messages');
         resource.addMethod('GET', new LambdaIntegration(getMessagesLambda));
+
+        // AppSync Event API, namespace & apiKey
+        const eventApi = new EventApi(this, 'ChatAppSyncEventsApi', {
+            apiName: 'ChatAppSyncEventApiWs',
+        });
+        // Add AppSync DynamoDB data source & add needed permission
+        const appSyncDynamoDbDataSource = eventApi.addDynamoDbDataSource('ddbsource', table);
+        table.grantReadWriteData(appSyncDynamoDbDataSource);
+        // create namespace with datasource and handler for onPublish
+        eventApi.addChannelNamespace('serverlesschat', {
+            code: AppSyncCode.fromAsset(path.join(__dirname, '../src/appsyncjs/serverlesschat-handler.js')),
+            publishHandlerConfig: {
+                dataSource: appSyncDynamoDbDataSource,
+            },
+        });
     }
 }
