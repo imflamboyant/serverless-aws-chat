@@ -11,19 +11,20 @@
     "cdk": "cdk"
   },
   "devDependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1019.0",
     "@aws-sdk/client-dynamodb": "^3.902.0",
     "@aws-sdk/lib-dynamodb": "^3.902.0",
     "@types/aws-lambda": "^8.10.155",
     "@types/jest": "^29.5.14",
     "@types/node": "22.7.9",
+    "aws-cdk": "2.1114.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
-    "aws-cdk": "2.1029.4",
     "ts-node": "^10.9.2",
     "typescript": "~5.6.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.215.0",
+    "aws-cdk-lib": "2.245.0",
     "constructs": "^10.0.0"
   }
 }
