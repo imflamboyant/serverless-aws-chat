@@ -8,6 +8,9 @@ const channelPrefix = 'serverlesschat/channels/';
 let currentChannel = null;
 let lastSender = '';
 
+// hide AI summary button
+document.getElementById('summaryFab').style.display = 'none';
+
 // html elements
 const channelList = document.getElementById('channelList');
 const messagesDiv = document.getElementById('messages');

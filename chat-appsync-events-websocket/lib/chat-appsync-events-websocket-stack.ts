@@ -4,9 +4,10 @@ import {Construct} from 'constructs';
 import {AttributeType, BillingMode, ITable, StreamViewType, Table} from 'aws-cdk-lib/aws-dynamodb';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Code, Runtime} from 'aws-cdk-lib/aws-lambda';
-import {LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
+import {LambdaIntegration, ResponseTransferMode, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import {Code as AppSyncCode, EventApi} from 'aws-cdk-lib/aws-appsync';
 import * as path from 'path'
+import {PolicyStatement} from 'aws-cdk-lib/aws-iam';
 
 export class ChatAppsyncEventsWebsocketStack extends cdk.Stack {
 
@@ -34,6 +35,23 @@ export class ChatAppsyncEventsWebsocketStack extends cdk.Stack {
         });
         table.grantReadData(getMessagesLambda);
 
+        // lambda function for AI summary of channel messages
+        const getSummaryLambda = new NodejsFunction(this, 'GetSummaryLambda', {
+            runtime: Runtime.NODEJS_22_X,
+            code: Code.fromAsset('src'),
+            handler: 'get-summary-handler.summarize',
+            timeout: cdk.Duration.seconds(60),
+            environment: {
+                MESSAGES_TABLE: table.tableName,
+                BEDROCK_MODEL_ID: 'eu.amazon.nova-micro-v1:0',
+            },
+        });
+        table.grantReadData(getSummaryLambda);
+        getSummaryLambda.addToRolePolicy(new PolicyStatement({
+            actions: ['bedrock:InvokeModelWithResponseStream'],
+            resources: ['*'],
+        }));
+
         // rest api to get messages from the DynamoDB table
         const api = new RestApi(this, 'ServerlessChatApi', {
             restApiName: 'Serverless Chat API',
@@ -42,8 +60,13 @@ export class ChatAppsyncEventsWebsocketStack extends cdk.Stack {
                 allowMethods: ['*'],
             }
         });
-        const resource = api.root.addResource('channels').addResource('{channel}').addResource('messages');
-        resource.addMethod('GET', new LambdaIntegration(getMessagesLambda));
+        // get messages resource
+        const channelResource = api.root.addResource('channels').addResource('{channel}');
+        const getMessagesResource = channelResource.addResource('messages');
+        getMessagesResource.addMethod('GET', new LambdaIntegration(getMessagesLambda));
+        // get summary resource
+        const getSummaryResource = channelResource.addResource('summarize');
+        getSummaryResource.addMethod('GET', new LambdaIntegration(getSummaryLambda, {responseTransferMode: ResponseTransferMode.STREAM}));
 
         // AppSync Event API, namespace & apiKey
         const eventApi = new EventApi(this, 'ChatAppSyncEventsApi', {

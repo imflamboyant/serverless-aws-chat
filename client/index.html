@@ -14,7 +14,13 @@
         <ul id="channelList"></ul>
     </div>
     <div id="chat">
-        <div id="messages"></div>
+        <div id="messagesWrap">
+            <div id="messages"></div>
+            <button id="summaryFab" type="button" title="Summarize this chat">
+                <span class="fabIcon" aria-hidden="true">✨</span>
+                <span>AI summary</span>
+            </button>
+        </div>
         <div id="input">
             <input type="text" id="messageInput" placeholder="Type your message...">
             <button id="sendButton">Send</button>

@@ -162,3 +162,48 @@ function displayMessage(message, senderType, sender) {
 
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
+// AI Summary
+async function summarizeChat(channelId) {
+    const messagesEl = document.getElementById('messages');
+    const bubble = document.createElement('div');
+    bubble.className = 'message summary-message';
+    bubble.innerHTML = `
+        <div class="summary-bubble streaming">
+            <div class="summary-header">
+                <span>✨</span>
+                <span class="summary-label">AI Summary</span>
+            </div>
+            <span class="summary-content"></span>
+        </div>
+    `;
+    messagesEl.appendChild(bubble);
+    const contentEl = bubble.querySelector('.summary-content');
+    const bubbleEl = bubble.querySelector('.summary-bubble');
+
+    try {
+        const response = await fetch(`${messagesApiUrl}/channels/${channelId}/summarize`);
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            contentEl.textContent += decoder.decode(value, { stream: true });
+            // Keep scrolling to bottom as tokens arrive
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        bubbleEl.classList.remove('streaming');
+    } catch (err) {
+        contentEl.textContent = 'Failed to load summary.';
+        console.error(err);
+    }
+}
+
+// Wire up the button
+document.getElementById('summaryFab').addEventListener('click', () => {
+    summarizeChat(currentChannel);
+});
